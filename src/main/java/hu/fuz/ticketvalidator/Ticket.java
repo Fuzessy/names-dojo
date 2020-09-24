@@ -1,20 +1,24 @@
 package hu.fuz.ticketvalidator;
 
+import hu.fuz.TimeService;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.regex.Pattern;
 
 public class Ticket {
-    private static final String METRO_LINE_DATE_PATTERN = "yyyyMMddHHmm";
+    private static final String DATE_TIME_PATTERN = "yyyyMMddHHmm";
     private static final int NUMBER_OF_METRO_DATE_CHARACTERS = 9;
     private static final int NUMBER_OF_DATE_CHARACTERS = 8;
     /* from 5th character appers 'xxx' cahacters */
     private static final String METRO_LINE_PATTERN = "^....xxx.*";
 
     private final String validationNumber;
+    private final TimeService timeService;
 
-    public Ticket(String validationNumber) {
+    public Ticket(String validationNumber, TimeService timeService) {
         this.validationNumber = validationNumber;
+        this.timeService = timeService;
     }
 
     public boolean isMetroLine() {
@@ -32,14 +36,27 @@ public class Ticket {
     }
 
     private LocalDateTime determineTravelStartTime() {
-        String dateCode = validationNumber.substring(validationNumber.length() - NUMBER_OF_DATE_CHARACTERS);
-        dateCode = LocalDateTime.now().getYear() + dateCode;
-        return LocalDateTime.parse(dateCode, DateTimeFormatter.ofPattern(METRO_LINE_DATE_PATTERN));
+        String dateCodeFromTicket = validationNumber.substring(validationNumber.length() - NUMBER_OF_DATE_CHARACTERS);
+        return determineTravelStartTimeByDateCode(dateCodeFromTicket);
+    }
+
+    private LocalDateTime determineTravelStartTimeByDateCode(String dateCodeFromTicket) {
+        String dateCode = LocalDateTime.now().getYear() + dateCodeFromTicket;
+        LocalDateTime parsedDate = LocalDateTime.parse(dateCode, DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
+        if(parsedDate.isAfter(timeService.getCurrentTime())){
+            parsedDate = fixStartDateTime(dateCodeFromTicket);
+        }
+        return parsedDate;
+    }
+
+    private LocalDateTime fixStartDateTime(String dateCodeFromTicket) {
+        String dateCode = (LocalDateTime.now().getYear()-1) + dateCodeFromTicket;
+        return LocalDateTime.parse(dateCode, DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
     }
 
     private LocalDateTime determinateMetroTravelStartTime() {
         String dateCode = validationNumber.substring(validationNumber.length() - NUMBER_OF_METRO_DATE_CHARACTERS);
         dateCode = "202" + dateCode;
-        return LocalDateTime.parse(dateCode, DateTimeFormatter.ofPattern(METRO_LINE_DATE_PATTERN));
+        return LocalDateTime.parse(dateCode, DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
     }
 }
