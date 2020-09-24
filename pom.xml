@@ -5,10 +5,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>hu.fuz</groupId>
-  <artifactId>names-dojo</artifactId>
+  <artifactId>ticket-validator-dojo</artifactId>
   <version>1.0-SNAPSHOT</version>
 
-  <name>names-dojo</name>
+  <name>ticket-validator-dojo</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
