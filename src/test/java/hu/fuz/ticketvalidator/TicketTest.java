@@ -69,17 +69,4 @@ public class TicketTest {
         Ticket ticket = new Ticket(METRO_VALIDATION_CODE_START_20200924_1305, timeService);
         assertEquals(LocalDateTime.of(2020,9,24,13,5), ticket.getTravelStartTime());
     }
-
-    private class FakeTimeService implements TimeService {
-        private final LocalDateTime fakeCurrentTime;
-
-        public FakeTimeService(LocalDateTime fakeCurrentTime) {
-            this.fakeCurrentTime = fakeCurrentTime;
-        }
-
-        @Override
-        public LocalDateTime getCurrentTime() {
-            return fakeCurrentTime;
-        }
-    }
 }
