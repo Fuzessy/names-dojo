@@ -10,7 +10,7 @@ import static org.junit.Assert.assertTrue;
 
 public class TicketValidatorTest {
 
-    private final static int METRO_VALIDITY_PERIOD_IN_MINUTES = 120;
+    private final static int METRO_VALIDITY_PERIOD_IN_MINUTES = 80;
 
     private final String METRO_VALIDATION_CODE_START_AT_5_0809_1011 = "0643xxx508091011";
     private LocalDateTime timeOf202508091011 = LocalDateTime.of(2025,8,9,10,11,0);
@@ -24,12 +24,6 @@ public class TicketValidatorTest {
         assertTrue(validator.isMetroTicketValid(ticket));
     }
 
-    private void setUpTestAndSetCurrentTime202508091011plusMinutes(int extraMinutes) {
-        timeService = new FakeTimeService(timeOf202508091011.plusMinutes(extraMinutes));
-        validator = new TicketValidator(timeService);
-        ticket = new Ticket(METRO_VALIDATION_CODE_START_AT_5_0809_1011, timeService);
-    }
-
     @Test
     public void checkExpiredMetroLineTicket(){
         setUpTestAndSetCurrentTime202508091011plusMinutes(METRO_VALIDITY_PERIOD_IN_MINUTES + 1);
@@ -40,5 +34,11 @@ public class TicketValidatorTest {
     public void checkValidMetroLineTicketOnTheEdge(){
         setUpTestAndSetCurrentTime202508091011plusMinutes(METRO_VALIDITY_PERIOD_IN_MINUTES);
         assertTrue(validator.isMetroTicketValid(ticket));
+    }
+
+    private void setUpTestAndSetCurrentTime202508091011plusMinutes(int extraMinutes) {
+        timeService = new FakeTimeService(timeOf202508091011.plusMinutes(extraMinutes));
+        validator = new TicketValidator(timeService);
+        ticket = new Ticket(METRO_VALIDATION_CODE_START_AT_5_0809_1011, timeService);
     }
 }
