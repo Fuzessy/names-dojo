@@ -50,13 +50,26 @@ public class Ticket {
     }
 
     private LocalDateTime fixStartDateTime(String dateCodeFromTicket) {
-        String dateCode = (LocalDateTime.now().getYear()-1) + dateCodeFromTicket;
+        String dateCode = (timeService.getCurrentTime().getYear()-1) + dateCodeFromTicket;
         return LocalDateTime.parse(dateCode, DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
     }
 
     private LocalDateTime determinateMetroTravelStartTime() {
-        String dateCode = validationNumber.substring(validationNumber.length() - NUMBER_OF_METRO_DATE_CHARACTERS);
-        dateCode = "202" + dateCode;
+        String dateCodeFromTicket = validationNumber.substring(validationNumber.length() - NUMBER_OF_METRO_DATE_CHARACTERS);
+        String dateCode = getMetroISODateCode(dateCodeFromTicket, timeService.getCurrentTime().getYear());
+        LocalDateTime parsedDate = LocalDateTime.parse(dateCode, DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
+        if(parsedDate.isAfter(timeService.getCurrentTime())){
+            parsedDate = fixMetroStartDateTime(dateCodeFromTicket);
+        }
+        return parsedDate;
+    }
+
+    private String getMetroISODateCode(String dateCodeFromTicket, int year) {
+        return (year + "").substring(0, 3) + dateCodeFromTicket;
+    }
+
+    private LocalDateTime fixMetroStartDateTime(String dateCodeFromTicket) {
+        String dateCode = getMetroISODateCode(dateCodeFromTicket, timeService.getCurrentTime().getYear()-10);
         return LocalDateTime.parse(dateCode, DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
     }
 }

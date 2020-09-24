@@ -1,5 +1,6 @@
-package hu.fuz;
+package hu.fuz.ticketvalidator;
 
+import hu.fuz.TimeService;
 import hu.fuz.ticketvalidator.Ticket;
 import org.junit.Test;
 
@@ -51,6 +52,22 @@ public class TicketTest {
         TimeService timeService = new FakeTimeService(LocalDateTime.of(2021,12,4,12,46,1));
         Ticket ticket = new Ticket(METRO_VALIDATION_CODE_START_20200924_1305, timeService);
         assertEquals(LocalDateTime.of(2020,12,4,12,46), ticket.getTravelStartTime());
+    }
+
+    @Test
+    public void getMetroTravelStartDateAt2030AndTicketPrintedInTheCurrentXearTest(){
+        String METRO_VALIDATION_CODE_START_20200924_1305 = "0643xxx009241305";
+        TimeService timeService = new FakeTimeService(LocalDateTime.of(2030,9,24,13,5,1));
+        Ticket ticket = new Ticket(METRO_VALIDATION_CODE_START_20200924_1305, timeService);
+        assertEquals(LocalDateTime.of(2030,9,24,13,5), ticket.getTravelStartTime());
+    }
+
+    @Test
+    public void getMetroTravelStartDateAt2030WhenTicketNumperPrintedLastDecadeTest(){
+        String METRO_VALIDATION_CODE_START_20200924_1305 = "0643xxx009241305";
+        TimeService timeService = new FakeTimeService(LocalDateTime.of(2030,9,24,13,04,1));
+        Ticket ticket = new Ticket(METRO_VALIDATION_CODE_START_20200924_1305, timeService);
+        assertEquals(LocalDateTime.of(2020,9,24,13,5), ticket.getTravelStartTime());
     }
 
     private class FakeTimeService implements TimeService {
